@@ -3,11 +3,12 @@ from flask import Flask, request
 from telegram.ext import Updater,CommandHandler,MessageHandler,Filters,CallbackContext, Dispatcher
 from telegram import Update,Bot
 
-
+# enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger=logging.getLogger(__name__)
- 
+
+# telegram bot token
 TOKEN = "xxx2355515:AAEvqbSRsrt2xrbugWTqJ2kxqqkFSBovjXM"
 
 app = Flask(__name__)
@@ -20,22 +21,26 @@ def index():
 
 @app.route(f'/{TOKEN}', methods=['GET', 'POST'])
 def webhook():
-   
+    """webhook view which receives updates from telegram"""
     update = Update.de_json(request.get_json(), bot)
     dp.process_update(update)
     return "ok"
 
 def echo_text(bot,update):
+     """callback function for text message handler"""
     reply=update.message.text
     bot.send_message(chat_id=update.message.chat_id, text=reply)
 
 def echo_sticker(bot,update):
+   """callback function for sticker message handler"""
     bot.send_sticker(chat_id=update.message.chat_id , sticker=update.message.sticker.file_id)
 
 def error(bot,update):
+     """callback function for error handler"""
     logger.error("Update '%s' has caused error '%s", update, update.error)
 
 def greeting(update: Update,context: CallbackContext):
+     """callback function for /start handler"""
     first_name = update.to_dict()['message']['chat']['first_name']
     update.message.reply_text("hi {}".format(first_name))
 
